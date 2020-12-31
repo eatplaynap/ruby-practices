@@ -17,12 +17,12 @@ puts ["日", "月", "火", "水", "木", "金", "土"].join(" ")
 print ("   ") * first_wday
 
 days.each do |date|
-    if date.sunday?
+  if date.sunday?
         print date.day.to_s.rjust(2)
-    elsif date.saturday?
+  elsif date.saturday?
         print (" ") + date.day.to_s.rjust(2) + ("\n")
-    else
+  else
         print (" ") + date.day.to_s.rjust(2)
-    end
+  end
 end
 puts ("\n")
