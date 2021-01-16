@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-CC = "gcc"
+CC = 'gcc'
 
 task :default => 'hello'
 
