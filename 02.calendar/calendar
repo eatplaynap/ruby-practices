@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'date'
 require 'optparse'
@@ -13,16 +14,16 @@ first_wday = first_day.wday
 days = (first_day..last_day)
 
 puts ("#{month}月 #{year}").center(20)
-puts ["日", "月", "火", "水", "木", "金", "土"].join(" ")
-print ("   ") * first_wday
+puts ['日', '月', '火', '水', '木', '金', '土'].join(' ')
+print '   ' * first_wday
 
 days.each do |date|
-    if date.sunday?
-        print date.day.to_s.rjust(2)
-    elsif date.saturday?
-        print (" ") + date.day.to_s.rjust(2) + ("\n")
-    else
-        print (" ") + date.day.to_s.rjust(2)
-    end
+  if date.sunday?
+    print date.day.to_s.rjust(2)
+  elsif date.saturday?
+    print ' ' + date.day.to_s.rjust(2) + "\n"
+  else
+    print ' ' + date.day.to_s.rjust(2)
+  end
 end
-puts ("\n")
+puts "\n"
