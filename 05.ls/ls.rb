@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 require 'optparse'
+require 'etc'
+require 'date'
 
 opt = ARGV.getopts('a', 'r', 'l')
 
@@ -14,10 +16,6 @@ files = if opt['a']
         end
 
 if opt['l']
-
-  require 'etc'
-  require 'date'
-
   def file_info(file)
     File::Stat.new(file)
   end
