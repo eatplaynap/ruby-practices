@@ -6,31 +6,51 @@ require 'optparse'
 def main
   @opt = ARGV.getopts('l')
   files = ARGV
-  if @opt['l'] && files.size == 1
-    puts output_for_l(files)
-  elsif @opt['l'] && files.size > 1
-    puts output_for_l(files)
-    puts total_count(files)
+  if @opt['l']
+    if files.empty?
+      puts output_for_zero_files
+    elsif files.size == 1
+      puts output_for_l(files)
+    else
+      puts output_for_l(files)
+      puts total_count(files)
+    end
   elsif files.empty?
-    puts output_for_zero_files(files)
-  elsif files.size > 1
+    puts output_for_zero_files
+  elsif files.size == 1
     puts output_for_files(files)
-    puts total_count(files)
   else
     puts output_for_files(files)
+    puts total_count(files)
   end
 end
 
-def output_for_zero_files(files)
+def output_for_l(files)
+  files.map do |file|
+    text = File.read(file)
+    lines = text.lines.count
+    name = File.basename(file)
+    [] << [
+      lines.to_s.rjust(8),
+      " #{name}"
+    ].join('')
+  end
+end
+
+def output_for_zero_files
   text = $stdin.read
   lines = text.lines.count
   words = text.split(/\s+/).size
   bytes = text.size
-  [] << [
-    lines.to_s.rjust(8),
-    words.to_s.rjust(8),
-    bytes.to_s.rjust(8)
-  ].join('')
+  [] << if @opt['l']
+          lines.to_s.rjust(8)
+        else
+          [
+            lines.to_s.rjust(8),
+            words.to_s.rjust(8),
+            bytes.to_s.rjust(8)
+          ].join('')
+        end
 end
 
 def output_for_files(files)
@@ -69,18 +89,6 @@ def total_count(files)
     number.to_s.rjust(8)
   end
   "#{total_with_space.join('')} total"
-end
-
-def output_for_l(files)
-  files.map do |file|
-    text = File.read(file)
-    lines = text.lines.count
-    name = File.basename(file)
-    [] << [
-      lines.to_s.rjust(8),
-      " #{name}"
-    ].join('')
-  end
 end
 
 main
