@@ -3,19 +3,12 @@
 
 require 'optparse'
 
+COLUMN_WIDTH = 8
+
 def main
   @opt = ARGV.getopts('l')
   files = ARGV
-  if @opt['l']
-    if files.empty?
-      puts output_for_zero_files
-    elsif files.size == 1
-      puts output_for_l(files)
-    else
-      puts output_for_l(files)
-      puts total_count(files)
-    end
-  elsif files.empty?
+  if files.empty?
     puts output_for_zero_files
   elsif files.size == 1
     puts output_for_files(files)
@@ -25,48 +18,32 @@ def main
   end
 end
 
-def output_for_l(files)
-  files.map do |file|
-    text = File.read(file)
-    lines = text.lines.count
-    name = File.basename(file)
-    [] << [
-      lines.to_s.rjust(8),
-      " #{name}"
-    ].join('')
-  end
-end
-
 def output_for_zero_files
   text = $stdin.read
-  lines = text.lines.count
-  words = text.split(/\s+/).size
-  bytes = text.size
-  [] << if @opt['l']
-          lines.to_s.rjust(8)
-        else
-          [
-            lines.to_s.rjust(8),
-            words.to_s.rjust(8),
-            bytes.to_s.rjust(8)
-          ].join('')
-        end
+  if @opt['l']
+    ingredients_for_output(text).first
+  else
+    ingredients_for_output(text).join
+  end
 end
 
 def output_for_files(files)
   files.map do |file|
     text = File.read(file)
-    lines = text.lines.count
-    words = text.split(/\s+/).size
-    bytes = File.open(file).size
-    name = File.basename(file)
-    [] << [
-      lines.to_s.rjust(8),
-      words.to_s.rjust(8),
-      bytes.to_s.rjust(8),
-      " #{name}"
-    ].join('')
+    if @opt['l']
+      ingredients_for_output(text, file).first
+    else
+      ingredients_for_output(text, file).join
+    end
   end
+end
+
+def ingredients_for_output(text, file = nil)
+  lines = text.lines.count
+  words = text.split(/\s+/).size
+  bytes = text.size
+  name = File.basename(file) if file
+  [lines.to_s.rjust(COLUMN_WIDTH), words.to_s.rjust(COLUMN_WIDTH), bytes.to_s.rjust(COLUMN_WIDTH), " #{name}"]
 end
 
 def total(files)
@@ -74,21 +51,21 @@ def total(files)
     text = File.read(file)
     lines = text.lines.count
     words = text.split(/\s+/).size
-    bytes = File.open(file).size
+    bytes = text.size
     if @opt['l']
-      [] << lines
+      [lines]
     else
-      [] << lines << words << bytes
+      [lines, words, bytes]
     end
   end
 end
 
 def total_count(files)
-  total_count = total(files).transpose.map { |a| a.inject(:+) }
+  total_count = total(files).transpose.map(&:sum)
   total_with_space = total_count.map do |number|
-    number.to_s.rjust(8)
+    number.to_s.rjust(COLUMN_WIDTH)
   end
-  "#{total_with_space.join('')} total"
+  "#{total_with_space.join} total"
 end
 
 main
