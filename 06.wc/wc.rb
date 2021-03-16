@@ -31,7 +31,7 @@ def output_for_files(files)
   files.map do |file|
     text = File.read(file)
     if @opt['l']
-      ingredients_for_output(text, file).first
+      ingredients_for_output(text, file).values_at(0, -1).join
     else
       ingredients_for_output(text, file).join
     end
